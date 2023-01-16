@@ -2,6 +2,7 @@ from mtcnn import MTCNN
 import os
 import cv2
 import math
+from PIL import Image
 
 # Create the MTCNN detector
 detector = MTCNN()
@@ -45,12 +46,20 @@ for filename in os.listdir(image_dir):
                 x, y, width, height = face['box']
                 face_image = image[y:y+height, x:x+width]
             elif save_whole_image == "2":
-                print(face)
-                centre_x = face['box'][0] + (face['box'][2] // 2)
-                centre_y = face['box'][1] - (face['box'][3] // 2)
-                corner_x = centre_x - 512//2
-                corner_y = centre_y + 512//2
-                face_image = image[corner_y:corner_y + 512, corner_x:corner_x + 512]
+                x, y, width, height = face['box']
+                width = round(width * 1.5)
+                height = round(height * 1.5)
+                x = x - (width - face['box'][2]) / 2
+                y = y - (height - face['box'][3]) / 2
+                if width > height:
+                    y = y - (width - height) / 2
+                    height = width
+                else:
+                    x = x - (height - width) / 2
+                    width = height
+                face_image = image[int(y):int(y+height), int(x):int(x+width)]
+                if face_image.shape[0]>0 and face_image.shape[1]>0:    
+                    face_image = cv2.resize(face_image, (512, 512), interpolation = cv2.INTER_LINEAR)
             elif save_whole_image == "1":
                 face_image = image
             if face_image.shape[0]>0 and face_image.shape[1]>0:    

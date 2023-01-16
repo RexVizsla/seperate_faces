@@ -37,6 +37,9 @@ while True:
 for filename in os.listdir(image_dir):
     # Read the image
     image = cv2.imread(os.path.join(image_dir, filename))
+    if keep_file_name =="numbers":
+        i = 0
+        filename = "{:06d}.jpg".format(i+1)
     # Detect faces
     faces = detector.detect_faces(image)
     # Iterate through the detected faces
